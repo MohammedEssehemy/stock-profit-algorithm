@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "ts-node-dev -- index.ts",
+    "debug": "ts-node-dev --inspect-brk -- index.ts"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.3"
+  }
+}
