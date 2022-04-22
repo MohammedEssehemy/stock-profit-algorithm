@@ -26,7 +26,6 @@ function findBestTxs(prices: number[], fee: number): number {
     let buyPrice = null;
     let buyDate = null;
     let txs: Transaction[] = [];
-    let previousTx: Transaction = null;
     for (let currentDate = 0; currentDate < prices.length; currentDate++) {
         const currentPrice = prices[currentDate];
         // if no buyerPrice or current price lower than buy price
@@ -51,9 +50,10 @@ function findBestTxs(prices: number[], fee: number): number {
             };
 
             // optimization for ineffective TXs
+            const previousTx = txs[txs.length - 1];
             if (previousTx) {
                 const differentInCost = currentTx.buyPrice - previousTx.buyPrice;
-                // if cost of previous tx is less than the difference in cost of re-buy
+                // if profit of previous tx is less than the difference in cost of re-buy
                 // then abort the previous transaction
                 if (previousTx.profit <= differentInCost) {
                     txs.pop();
@@ -65,7 +65,6 @@ function findBestTxs(prices: number[], fee: number): number {
             
             txs.push(currentTx);
             buyPrice = null;
-            previousTx = currentTx;
         }
     }
 
