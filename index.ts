@@ -62,7 +62,7 @@ function findBestTxs(prices: number[], fee: number): number {
                     currentTx.profit += differentInCost;
                 }
             }
-            
+
             txs.push(currentTx);
             buyPrice = null;
         }
@@ -76,31 +76,46 @@ function findBestTxs(prices: number[], fee: number): number {
 }
 
 
-function assert(result: number, expected: number) {
+
+
+function assert<T extends any>(result: T, expected: T) {
     if (result !== expected) {
         throw new Error(`expected ${expected} but received ${result}`)
     }
 }
 
-function testCases() {
-    assert(findBestTxs([1, 3, 2, 10, 6, 18, 19, 29], 2), 28);
-    assert(findBestTxs([1, 3, 2, 10, 6, 18, 19, 29], 9), 19);
-    assert(findBestTxs([1, 3, 2, 10, 6, 5, 18, 29], 8), 20);
-    assert(findBestTxs([1, 3, 2, 10, 6, 5, 18, 29], 7), 21);
-    assert(findBestTxs([1, 3, 2, 10, 6, 5, 18, 29], 6), 22);
-    assert(findBestTxs([1, 3, 2, 10, 6, 5, 18, 29], 5), 23);
-    assert(findBestTxs([1, 3, 2, 10, 6, 5, 18, 29], 4), 25);
-    assert(findBestTxs([1, 3, 2, 4, 3, 18, 19, 29], 2), 26);
-    assert(findBestTxs([1, 3, 2, 10, 6, 18, 19, 29], 2), 28);
-    assert(findBestTxs([1, 3, 2, 10, 6, 18, 19, 29, 3, 10], 2), 33);
-    assert(findBestTxs([3, 1, 2, 10, 6, 18, 19, 29, 3, 10], 2), 33);
-    assert(findBestTxs([3, 1, 2, 10, 6, 18, 19, 29, 3, 10], 4), 27);
-    assert(findBestTxs([3, 1, 2, 10, 6, 18, 19, 29, 3, 35], 2), 58);
-    assert(findBestTxs([3, 1, 2, 10, 6, 18, 19, 29, 3, 35, 6], 2), 58);
-    assert(findBestTxs([3, 1, 2, 10, 6, 18, 19, 29, 3, 35, 40], 2), 63);
-    assert(findBestTxs([4, 1, 3, 2, 18, 19, 29], 2), 26);
-    assert(findBestTxs([1, 3, 2, 8, 4, 9], 2), 8);
+type AnyFunction = (...args: any[]) => any;
+
+type TestCase<TFunction extends AnyFunction> = {
+    data: Parameters<TFunction>;
+    result: ReturnType<TFunction>
+};
+
+function runTests<TFunction extends AnyFunction>(func: TFunction, testCases: TestCase<TFunction>[]) {
+    for (const testCase of testCases) {
+        assert(func(...testCase.data), testCase.result);
+    }
 }
 
+const testCases: TestCase<typeof findBestTxs>[] = [
+    { data: [[1, 3, 2, 10, 6, 18, 19, 29], 2], result: 28 },
+    { data: [[1, 3, 2, 10, 6, 18, 19, 29], 9], result: 19 },
+    { data: [[1, 3, 2, 10, 6, 5, 18, 29], 8], result: 20 },
+    { data: [[1, 3, 2, 10, 6, 5, 18, 29], 7], result: 21 },
+    { data: [[1, 3, 2, 10, 6, 5, 18, 29], 6], result: 22 },
+    { data: [[1, 3, 2, 10, 6, 5, 18, 29], 5], result: 23 },
+    { data: [[1, 3, 2, 10, 6, 5, 18, 29], 4], result: 25 },
+    { data: [[1, 3, 2, 4, 3, 18, 19, 29], 2], result: 26 },
+    { data: [[1, 3, 2, 10, 6, 18, 19, 29], 2], result: 28 },
+    { data: [[1, 3, 2, 10, 6, 18, 19, 29, 3, 10], 2], result: 33 },
+    { data: [[3, 1, 2, 10, 6, 18, 19, 29, 3, 10], 2], result: 33 },
+    { data: [[3, 1, 2, 10, 6, 18, 19, 29, 3, 10], 4], result: 27 },
+    { data: [[3, 1, 2, 10, 6, 18, 19, 29, 3, 35], 2], result: 58 },
+    { data: [[3, 1, 2, 10, 6, 18, 19, 29, 3, 35, 6], 2], result: 58 },
+    { data: [[3, 1, 2, 10, 6, 18, 19, 29, 3, 35, 40], 2], result: 63 },
+    { data: [[4, 1, 3, 2, 18, 19, 29], 2], result: 26 },
+    { data: [[1, 3, 2, 8, 4, 9], 2], result: 8 },
+];
 
-testCases();
+
+runTests(findBestTxs, testCases);
